@@ -3,9 +3,13 @@ import * as THREE from "three";
 const w = window.innerHeight;
 const h = window.innerWidth;
 //renderer
-const renderer = new THREE.WebGLRenderer({
-  antialias: true,
-});
+// const renderer = new THREE.WebGLRenderer({
+//   antialias: true,
+// });
+
+//NEW WAY USING HTML CANVAS:
+const canvas = document.querySelector("#c");
+const renderer = new THREE.WebGLRenderer({ antialias: true, canvas });
 
 renderer.setSize(w, h);
 
@@ -73,8 +77,24 @@ const cubes = [
   makeCubeInstance(geometry, 0xaa8844, 2),
 ];
 
+function resizeRendererToDisplaySize(renderer) {
+  const canvas = renderer.domElement;
+  const width = canvas.clientWidth;
+  const height = canvas.clientHeight;
+  const needResize = canvas.width !== width || canvas.height !== height;
+  if (needResize) {
+    renderer.setSize(width, height, false);
+  }
+  return needResize;
+}
+
 function animateCubes(time) {
   time *= 0.001;
+  if (resizeRendererToDisplaySize(renderer)) {
+    const canvas = renderer.domElement;
+    camera.aspect = canvas.clientWidth / canvas.clientHeight;
+    camera.updateProjectionMatrix();
+  }
   cubes.forEach((cube, ndx) => {
     //ndx=index?
     const speed = 1 + ndx * 0.1;
